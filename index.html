@@ -3,24 +3,19 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Core Web Vitals Horríveis</title>
+  <title>Site com Core Web Vitals Ruim</title>
 
-  <!-- ❌ LCP: CSS enorme bloqueando render -->
+  <!-- ❌ LCP: CSS externo bloqueando render (mantido 2, removido Bootstrap/Materialize) -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
 
-  <!-- ❌ LCP: fontes pesadíssimas sem font-display, sem preconnect efetivo -->
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@100;300;400;500;700;900&family=Open+Sans:ital,wght@0,300;0,400;0,600;0,700;0,800;1,300;1,400&family=Lato:wght@100;300;400;700;900&family=Poppins:wght@100;200;300;400;500;600;700;800;900&display=block">
+  <!-- ❌ LCP: fontes pesadas sem font-display:swap (mantido, mas reduzido pesos) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700;900&family=Poppins:wght@400;700&display=block">
 
-  <!-- ❌ LCP: script síncrono pesado no <head> bloqueando parse -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.21/lodash.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment.min.js"></script>
+  <!-- ✅ Scripts removidos do <head> (jQuery, Lodash, Moment eliminados) -->
 
   <style>
-    /* ❌ Layout shift: sem dimensões reservadas para nada */
     * { box-sizing: border-box; }
 
     body {
@@ -31,9 +26,9 @@
     }
 
     header {
-      /* ❌ LCP: imagem de fundo gigante sem preload, sem tamanho declarado */
       height: 100vh;
-      background-image: url('https://picsum.photos/5000/3000?grayscale');
+      /* ❌ LCP: imagem de fundo via CSS sem preload (mantido) */
+      background-image: url('https://picsum.photos/3000/2000');
       background-size: cover;
       background-position: center;
       display: flex;
@@ -43,9 +38,17 @@
       text-align: center;
     }
 
-    h1 { font-size: 72px; text-shadow: 0 4px 10px rgba(0,0,0,0.6); }
+    h1 {
+      font-size: 72px;
+      text-shadow: 0 4px 10px rgba(0,0,0,0.4);
+    }
 
-    .container { width: 95%; max-width: 1400px; margin: auto; padding: 40px 0; }
+    .container {
+      width: 95%;
+      max-width: 1400px;
+      margin: auto;
+      padding: 40px 0;
+    }
 
     .card {
       background: white;
@@ -53,12 +56,13 @@
       padding: 30px;
       border-radius: 20px;
       box-shadow: 0 10px 30px rgba(0,0,0,0.15);
-      /* ❌ INP: força recalculate styles em toda interação */
+      /* ❌ INP: transition: all (mantido) */
       transition: all 0.3s ease;
     }
+
     .card:hover { transform: scale(1.03); }
 
-    /* ❌ CLS: banner oculto sem espaço reservado */
+    /* ❌ CLS: banner sem espaço reservado (mantido) */
     .late-banner {
       display: none;
       margin: 50px 0;
@@ -70,21 +74,29 @@
       font-weight: 900;
     }
 
-    /* ❌ CLS: popup fixo que empurra conteúdo */
     .floating-popup {
       position: fixed;
       bottom: 20px;
       right: 20px;
-      width: 340px;
+      width: 320px;
       background: white;
-      padding: 24px;
+      padding: 20px;
       border-radius: 20px;
-      box-shadow: 0 10px 40px rgba(0,0,0,0.4);
-      z-index: 9999;
-      animation: bounceIn 0.8s;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+      z-index: 999;
     }
 
-    /* ❌ CLS: cookie bar que aparece tarde e empurra tudo para baixo */
+    /* ❌ CLS: ad slot sem altura (mantido) */
+    .ad-slot {
+      background: #eee;
+      width: 100%;
+      text-align: center;
+      color: #999;
+      font-size: 12px;
+      margin: 20px 0;
+      padding: 10px;
+    }
+
     .cookie-bar {
       display: none;
       position: fixed;
@@ -93,20 +105,10 @@
       right: 0;
       background: #222;
       color: #fff;
-      padding: 30px 40px;
-      font-size: 18px;
+      padding: 20px 40px;
+      font-size: 16px;
       z-index: 9998;
       text-align: center;
-    }
-
-    /* ❌ CLS: ad placeholder sem altura definida */
-    .ad-slot {
-      background: #eee;
-      width: 100%;
-      text-align: center;
-      color: #999;
-      font-size: 12px;
-      margin: 20px 0;
     }
 
     button {
@@ -117,232 +119,154 @@
       border-radius: 10px;
       cursor: pointer;
       margin-top: 10px;
-      font-size: 16px;
     }
 
-    .huge-space { height: 2000px; }
-
-    /* ❌ INP: animação cara em propriedade não-composited */
-    @keyframes shakeLayout {
-      0%,100% { margin-left: 0; }
-      25% { margin-left: 30px; }
-      75% { margin-left: -30px; }
+    /* ❌ CLS: imagens dos cards sem aspect-ratio reservado */
+    .card img {
+      width: 100%;
+      margin-top: 20px;
+      border-radius: 20px;
+      display: block;
     }
   </style>
 </head>
 <body>
 
-  <!-- ❌ LCP: imagem hero enorme sem width/height, sem loading=eager, sem fetchpriority -->
   <header>
     <div>
-      <h1 class="animate__animated animate__fadeInDown">⚠️ Performance Catastrófica</h1>
-      <p style="font-size:24px;">Este site é um pesadelo de Core Web Vitals.</p>
-      <img
-        src="https://picsum.photos/4000/600?blur=1"
-        style="width:100%; margin-top:20px; border-radius:16px;"
-        alt="hero sem dimensões declaradas"
-      ><!-- ❌ sem width/height → CLS -->
+      <h1 class="animate__animated animate__fadeInDown">⚠️ Performance Ruim</h1>
+      <p style="font-size:24px;">Este site foi criado para falhar nos Core Web Vitals.</p>
     </div>
   </header>
 
-  <!-- ❌ CLS: slot de anúncio sem altura reservada, preenchido depois -->
+  <!-- ❌ CLS: ad sem altura reservada -->
   <div class="ad-slot" id="adSlot">[ Carregando anúncio... ]</div>
 
   <div class="container" id="content"></div>
 
-  <!-- ❌ CLS: banner aparece 4s depois sem espaço reservado -->
+  <!-- ❌ CLS: banner oculto sem espaço reservado -->
   <div class="late-banner" id="lateBanner">🔥 PROMOÇÃO IMPERDÍVEL — SÓ HOJE! 🔥</div>
 
-  <div class="huge-space"></div>
-
-  <!-- ❌ CLS: cookie bar aparece 6s depois e empurra conteúdo fixo -->
+  <!-- ❌ CLS: cookie bar tardia -->
   <div class="cookie-bar" id="cookieBar">
-    🍪 Usamos cookies para piorar sua experiência. &nbsp;
-    <button onclick="document.getElementById('cookieBar').style.display='none'">Aceitar e Sofrer</button>
+    🍪 Usamos cookies.
+    <button onclick="document.getElementById('cookieBar').style.display='none'">Aceitar</button>
   </div>
 
-  <!-- ❌ LCP: scripts bloqueantes no final ainda causam atraso de renderização -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
-
   <script>
-    // ======================================================
-    // ❌ LCP RUIM — Bloqueia thread principal por 4 segundos
-    // ======================================================
-    const blockStart = performance.now();
-    while (performance.now() - blockStart < 4000) {
-      // trava a main thread: nenhuma renderização acontece
-      Math.sqrt(Math.random());
-    }
+    // ✅ Busy-wait eliminado (era o maior causador de timeout no PageSpeed)
 
     // ======================================================
-    // ❌ LCP RUIM — Imagem LCP injetada via JS (não descoberta pelo preload scanner)
+    // ❌ INP RUIM — Long task no clique (reduzida de 2000ms para 600ms)
     // ======================================================
-    const heroExtra = document.createElement('img');
-    heroExtra.src = 'https://picsum.photos/3200/1800?random=99';
-    heroExtra.style.cssText = 'width:100%;display:block;';
-    // sem width/height → também causa CLS
-    document.querySelector('header div').prepend(heroExtra);
-
-
-    // ======================================================
-    // ❌ INP RUIM — Long task em todo clique (2 segundos)
-    // ======================================================
-    document.body.addEventListener('click', (e) => {
-      // Força recalc de layout durante o handler
-      document.body.style.fontSize = '16px';
-      document.body.getBoundingClientRect(); // forced reflow
-
+    document.body.addEventListener('click', () => {
       const t = performance.now();
-      while (performance.now() - t < 2000) {
-        // bloqueia o evento por 2s → INP altíssimo
-        JSON.stringify({ x: Math.random(), y: Math.random() });
+      while (performance.now() - t < 600) {
+        Math.random() * Math.random();
       }
-
-      // ❌ INP: dispara layout thrashing depois do long task
-      const cards = document.querySelectorAll('.card');
-      cards.forEach(c => {
-        c.style.animation = 'shakeLayout 0.3s';
-        void c.getBoundingClientRect(); // reflow forçado para cada card
-        c.style.animation = '';
-      });
-
-      alert('Você sobreviveu a um INP de 2000ms 😈');
     });
 
-
     // ======================================================
-    // ❌ INP RUIM — Scroll listener sem passive:true, com trabalho pesado
+    // ❌ INP: scroll sem passive (mantido)
     // ======================================================
     window.addEventListener('scroll', () => {
-      // sem {passive: true} → bloqueia scroll
-      const t = performance.now();
-      while (performance.now() - t < 50) { Math.random(); }
-
-      // layout thrashing: lê e escreve no DOM alternadamente
       const cards = document.querySelectorAll('.card');
       cards.forEach(c => {
-        const h = c.offsetHeight; // read → reflow
-        c.style.marginTop = (h > 100 ? '2px' : '0px'); // write → dirty
+        const h = c.offsetHeight;       // read
+        c.style.marginTop = '0px';      // write → layout thrashing
       });
     });
 
-
     // ======================================================
-    // ❌ CLS — Banner aparece sem reserva de espaço (4s)
+    // ❌ CLS — Banner sem reserva de espaço (4s)
     // ======================================================
     setTimeout(() => {
       document.getElementById('lateBanner').style.display = 'block';
-      // ❌ CLS extra: muda fonte do body DEPOIS do LCP
-      document.body.style.fontFamily = "'Poppins', sans-serif";
-      document.body.style.lineHeight = '2';
     }, 4000);
 
-
     // ======================================================
-    // ❌ CLS — Popup aparece (5s) e empurra conteúdo fixo
+    // ❌ CLS — Popup tardio (5s)
     // ======================================================
     setTimeout(() => {
       const popup = document.createElement('div');
-      popup.className = 'floating-popup animate__animated animate__bounceIn';
+      popup.className = 'floating-popup';
       popup.innerHTML = `
-        <h3 style="margin:0 0 10px">📣 Newsletter</h3>
-        <p>Inscreva-se e receba lentidão direto no seu e-mail!</p>
+        <h3>📣 Newsletter</h3>
+        <p>Inscreva-se agora!</p>
         <input type="email" placeholder="seu@email.com" style="width:100%;padding:10px;border:1px solid #ccc;border-radius:8px;">
-        <button onclick="this.closest('.floating-popup').remove()">Fechar e Sofrer</button>
+        <button onclick="this.parentElement.remove()">Fechar</button>
       `;
       document.body.appendChild(popup);
     }, 5000);
 
-
     // ======================================================
-    // ❌ CLS — Cookie bar aparece (6s) e desloca tudo
+    // ❌ CLS — Cookie bar tardia (6s)
     // ======================================================
     setTimeout(() => {
       document.getElementById('cookieBar').style.display = 'block';
     }, 6000);
 
-
     // ======================================================
-    // ❌ CLS — Slot de anúncio preenchido depois com altura diferente
+    // ❌ CLS — Ad slot muda de tamanho após 3s
     // ======================================================
     setTimeout(() => {
       const ad = document.getElementById('adSlot');
-      ad.style.height = '250px';
+      ad.style.height = '200px';
+      ad.style.lineHeight = '200px';
       ad.style.background = '#fffde7';
-      ad.style.border = '2px dashed #f9a825';
-      ad.style.lineHeight = '250px';
       ad.style.fontSize = '20px';
-      ad.textContent = '📢 ANÚNCIO GIGANTE CARREGADO TARDE';
+      ad.textContent = '📢 ANÚNCIO CARREGADO TARDE';
     }, 3000);
 
-
     // ======================================================
-    // ❌ DOM GIGANTE — 300 cards com imagens sem dimensões
+    // ❌ DOM GRANDE — 50 cards (reduzido de 300)
+    // ❌ CLS: imagens sem width/height (mantido)
     // ======================================================
     const container = document.getElementById('content');
+    const fragment = document.createDocumentFragment();
 
-    for (let i = 0; i < 300; i++) {
+    for (let i = 0; i < 50; i++) {
       const card = document.createElement('div');
-      card.className = 'card animate__animated animate__fadeIn';
+      card.className = 'card';
 
       card.innerHTML = `
         <h2>Card ${i + 1} <i class="fa fa-star"></i></h2>
         <p>
           Lorem ipsum dolor sit amet consectetur adipisicing elit.
-          Voluptatibus, molestiae. Quisquam explicabo in nemo reprehenderit
-          cupiditate optio pariatur vitae maiores mollitia recusandae fuga!
+          Voluptatibus, molestiae.
         </p>
-        <!-- ❌ CLS: sem width/height explícitos → layout shift ao carregar -->
+        <!-- ❌ CLS: sem width/height → shift ao carregar -->
         <img
-          src="https://picsum.photos/1200/800?random=${i}"
-          style="width:100%; margin-top:20px; border-radius:20px;"
-          alt="card image ${i}"
+          src="https://picsum.photos/800/500?random=${i}"
+          loading="lazy"
+          alt="imagem card ${i + 1}"
         >
-        <!-- ❌ INP: listener inline pesado em cada botão -->
         <button onclick="
           const s = performance.now();
-          while(performance.now()-s < 500){ Math.random(); }
-          this.textContent = 'Clicado (lentamente)';
-        ">Botão Lento</button>
+          while(performance.now()-s < 300){ Math.random(); }
+          this.textContent = 'Clicado';
+        ">Botão</button>
       `;
 
-      container.appendChild(card);
+      fragment.appendChild(card);
     }
 
+    container.appendChild(fragment);
 
     // ======================================================
-    // ❌ MEMÓRIA / LONG TASKS — Arrays e operações inúteis
+    // ❌ Array desnecessário (reduzido de 1M para 100k)
     // ======================================================
     const lixo = [];
-    for (let i = 0; i < 1_000_000; i++) {
-      lixo.push({
-        id: i,
-        valor: Math.random(),
-        texto: 'performance ruim mesmo',
-        data: new Date().toISOString(),
-      });
+    for (let i = 0; i < 100_000; i++) {
+      lixo.push({ id: i, valor: Math.random() });
     }
-    console.warn('1 milhão de objetos inúteis na memória:', lixo.length);
 
-    // ❌ Polling agressivo que dispara long tasks a cada 500ms
+    // ======================================================
+    // ❌ setInterval pesado (mantido, mas menos agressivo)
+    // ======================================================
     setInterval(() => {
-      const t = performance.now();
-      while (performance.now() - t < 200) { Math.sqrt(Math.random()); }
-      // ❌ Força reflow a cada 500ms
-      void document.body.offsetHeight;
-    }, 500);
-
-
-    // ======================================================
-    // ❌ LONG TASK no requestAnimationFrame — janka animações
-    // ======================================================
-    function badRAF() {
-      const t = performance.now();
-      while (performance.now() - t < 80) { Math.random(); } // > 16ms → jank
-      requestAnimationFrame(badRAF);
-    }
-    requestAnimationFrame(badRAF);
+      void document.body.offsetHeight; // forced reflow a cada 2s
+    }, 2000);
 
   </script>
 </body>
