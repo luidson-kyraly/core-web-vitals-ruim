@@ -9,9 +9,13 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
-  <!-- ❌ LCP: fontes pesadas sem font-display:swap (mantido, mas reduzido pesos) -->
+  <!-- ❌ CLS: 4 famílias de fontes diferentes carregadas, todas com display=block -->
+  <!-- Cada uma tem métricas diferentes → cada troca causa layout shift -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700;900&family=Poppins:wght@400;700&display=block">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@100;300;400;500;700;900&display=block">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&display=block">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bebas+Neue&display=block">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lobster&display=block">
 
   <!-- ✅ Scripts removidos do <head> (jQuery, Lodash, Moment eliminados) -->
 
@@ -128,6 +132,23 @@
       border-radius: 20px;
       display: block;
     }
+
+    /* ❌ CLS: elementos inseridos no topo empurram tudo para baixo */
+    .injected-bar {
+      background: #1a73e8;
+      color: white;
+      text-align: center;
+      padding: 18px;
+      font-size: 16px;
+      font-weight: bold;
+    }
+
+    /* ❌ CLS: parágrafo que cresce de tamanho depois */
+    .growing-text {
+      font-size: 14px;
+      line-height: 1.4;
+      transition: none;
+    }
   </style>
 </head>
 <body>
@@ -138,6 +159,14 @@
       <p style="font-size:24px;">Este site foi criado para falhar nos Core Web Vitals.</p>
     </div>
   </header>
+
+  <!-- ❌ CLS: parágrafo intro que muda de tamanho e fonte depois -->
+  <div style="max-width:1400px;width:95%;margin:30px auto;" id="introText">
+    <p class="growing-text" id="growingPara">
+      Bem-vindo ao nosso site. Aqui você encontra os melhores produtos com os melhores preços.
+      Navegue à vontade e aproveite nossas promoções exclusivas para clientes cadastrados.
+    </p>
+  </div>
 
   <!-- ❌ CLS: ad sem altura reservada -->
   <div class="ad-slot" id="adSlot">[ Carregando anúncio... ]</div>
@@ -154,10 +183,90 @@
   </div>
 
   <script>
-    // ✅ Busy-wait eliminado (era o maior causador de timeout no PageSpeed)
+    // ======================================================
+    // ❌ CLS — FONT SHIFT em cascata: troca fontes 4 vezes
+    // Cada fonte tem métricas diferentes → shift em toda troca
+    // ======================================================
+
+    // 0.5s: troca para Playfair Display (serifada, muito mais alta)
+    setTimeout(() => {
+      document.body.style.fontFamily = "'Playfair Display', Georgia, serif";
+      document.body.style.lineHeight = '1.9';
+      document.body.style.letterSpacing = '0.5px';
+    }, 500);
+
+    // 1.2s: troca para Bebas Neue (condensada, toda maiúscula)
+    setTimeout(() => {
+      document.body.style.fontFamily = "'Bebas Neue', Impact, sans-serif";
+      document.body.style.lineHeight = '1.1';
+      document.body.style.letterSpacing = '3px';
+      document.body.style.fontSize = '18px';
+    }, 1200);
+
+    // 2s: troca para Lobster (script/cursiva, muito diferente)
+    setTimeout(() => {
+      document.body.style.fontFamily = "'Lobster', cursive";
+      document.body.style.lineHeight = '2.2';
+      document.body.style.letterSpacing = '0px';
+      document.body.style.fontSize = '16px';
+    }, 2000);
+
+    // 3s: volta pra Roboto mas com line-height diferente
+    setTimeout(() => {
+      document.body.style.fontFamily = "'Roboto', sans-serif";
+      document.body.style.lineHeight = '2.5';
+      document.body.style.letterSpacing = '1px';
+      document.body.style.fontSize = '17px';
+    }, 3000);
 
     // ======================================================
-    // ❌ INP RUIM — Long task no clique (reduzida de 2000ms para 600ms)
+    // ❌ CLS — Parágrafo cresce de tamanho após 1.5s
+    // ======================================================
+    setTimeout(() => {
+      const p = document.getElementById('growingPara');
+      p.style.fontSize = '22px';
+      p.style.lineHeight = '2.4';
+      p.style.fontWeight = '700';
+      p.textContent += ' TEXTO EXTRA INSERIDO DEPOIS QUE EMPURRA TODO O CONTEÚDO ABAIXO!!';
+    }, 1500);
+
+    // ======================================================
+    // ❌ CLS — Barra injetada no TOPO do body (empurra TUDO para baixo)
+    // ======================================================
+    setTimeout(() => {
+      const bar = document.createElement('div');
+      bar.className = 'injected-bar';
+      bar.textContent = '🚨 ATENÇÃO: Esta barra foi injetada no topo e deslocou toda a página!';
+      document.body.prepend(bar);
+    }, 2500);
+
+    // ======================================================
+    // ❌ CLS — Segunda barra injetada no topo (mais shift)
+    // ======================================================
+    setTimeout(() => {
+      const bar2 = document.createElement('div');
+      bar2.className = 'injected-bar';
+      bar2.style.background = '#e53935';
+      bar2.style.padding = '30px';
+      bar2.style.fontSize = '20px';
+      bar2.textContent = '🔴 MAIS UMA BARRA NO TOPO — CLS ACUMULANDO!';
+      document.body.prepend(bar2);
+    }, 4500);
+
+    // ======================================================
+    // ❌ CLS — h1 muda de tamanho e fonte depois
+    // ======================================================
+    setTimeout(() => {
+      const h1 = document.querySelector('h1');
+      if (h1) {
+        h1.style.fontFamily = "'Lobster', cursive";
+        h1.style.fontSize = '96px';
+        h1.style.lineHeight = '1.5';
+      }
+    }, 3500);
+
+    // ======================================================
+    // ❌ INP RUIM — Long task no clique (600ms)
     // ======================================================
     document.body.addEventListener('click', () => {
       const t = performance.now();
@@ -167,13 +276,13 @@
     });
 
     // ======================================================
-    // ❌ INP: scroll sem passive (mantido)
+    // ❌ INP: scroll sem passive
     // ======================================================
     window.addEventListener('scroll', () => {
       const cards = document.querySelectorAll('.card');
       cards.forEach(c => {
-        const h = c.offsetHeight;       // read
-        c.style.marginTop = '0px';      // write → layout thrashing
+        const h = c.offsetHeight;
+        c.style.marginTop = '0px';
       });
     });
 
@@ -219,8 +328,7 @@
     }, 3000);
 
     // ======================================================
-    // ❌ DOM GRANDE — 50 cards (reduzido de 300)
-    // ❌ CLS: imagens sem width/height (mantido)
+    // ❌ DOM GRANDE — 50 cards, imagens sem width/height
     // ======================================================
     const container = document.getElementById('content');
     const fragment = document.createDocumentFragment();
@@ -254,7 +362,7 @@
     container.appendChild(fragment);
 
     // ======================================================
-    // ❌ Array desnecessário (reduzido de 1M para 100k)
+    // ❌ Array desnecessário
     // ======================================================
     const lixo = [];
     for (let i = 0; i < 100_000; i++) {
@@ -262,10 +370,10 @@
     }
 
     // ======================================================
-    // ❌ setInterval pesado (mantido, mas menos agressivo)
+    // ❌ setInterval com forced reflow
     // ======================================================
     setInterval(() => {
-      void document.body.offsetHeight; // forced reflow a cada 2s
+      void document.body.offsetHeight;
     }, 2000);
 
   </script>
