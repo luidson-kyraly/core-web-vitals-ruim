@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Site com Core Web Vitals Ruim</title>
+
+  <!-- CSS gigante bloqueando render -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+  <!-- Fonte pesada sem preload -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@100;300;400;500;700;900&display=swap">
+
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Roboto', sans-serif;
+      background: #f5f5f5;
+      overflow-x: hidden;
+    }
+
+    header {
+      height: 100vh;
+      background-image: url('https://picsum.photos/3000/2000');
+      background-size: cover;
+      background-position: center;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      text-align: center;
+    }
+
+    h1 {
+      font-size: 72px;
+      text-shadow: 0 4px 10px rgba(0,0,0,0.4);
+    }
+
+    .container {
+      width: 95%;
+      max-width: 1400px;
+      margin: auto;
+      padding: 40px 0;
+    }
+
+    .card {
+      background: white;
+      margin-bottom: 30px;
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+      transition: all 0.3s ease;
+    }
+
+    .card:hover {
+      transform: scale(1.03);
+    }
+
+    .lazy-banner {
+      margin: 50px 0;
+      background: #111;
+      color: white;
+      text-align: center;
+      padding: 80px;
+      font-size: 42px;
+      display: none;
+    }
+
+    .floating-popup {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      width: 320px;
+      background: white;
+      padding: 20px;
+      border-radius: 20px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+      z-index: 999;
+      animation: bounceIn 1s;
+    }
+
+    button {
+      background: black;
+      color: white;
+      border: none;
+      padding: 15px 20px;
+      border-radius: 10px;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+
+    .huge-space {
+      height: 1500px;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div>
+      <h1>Performance Horrível</h1>
+      <p>Este site foi criado para falhar nos Core Web Vitals.</p>
+    </div>
+  </header>
+
+  <div class="container" id="content"></div>
+
+  <div class="lazy-banner" id="lateBanner">
+    PROMOÇÃO IMPERDÍVEL 🔥
+  </div>
+
+  <div class="huge-space"></div>
+
+  <script>
+
+    // =========================
+    // LCP RUIM
+    // =========================
+    // Hero image gigante sem preload
+    // Bloqueio artificial
+
+    const start = performance.now();
+    while (performance.now() - start < 3000) {
+      // trava a thread principal por 3 segundos
+    }
+
+
+    // =========================
+    // INP RUIM
+    // =========================
+    // Eventos pesados e long tasks
+
+    document.body.addEventListener('click', () => {
+      const startHeavy = performance.now();
+
+      while (performance.now() - startHeavy < 2000) {
+        Math.random() * Math.random();
+      }
+
+      alert('Interação extremamente lenta 😈');
+    });
+
+
+    // =========================
+    // CLS RUIM
+    // =========================
+    // Elementos inseridos depois
+
+    setTimeout(() => {
+      document.getElementById('lateBanner').style.display = 'block';
+    }, 4000);
+
+
+    // =========================
+    // DOM GIGANTE
+    // =========================
+
+    const container = document.getElementById('content');
+
+    for (let i = 0; i < 250; i++) {
+      const card = document.createElement('div');
+      card.className = 'card animate__animated animate__fadeIn';
+
+      card.innerHTML = `
+        <h2>Card ${i + 1}</h2>
+        <p>
+          Lorem ipsum dolor sit amet consectetur adipisicing elit.
+          Voluptatibus, molestiae. Lorem ipsum dolor sit amet consectetur adipisicing elit.
+          Voluptatibus, molestiae.
+        </p>
+
+        <!-- imagem sem width e height -->
+        <img src="https://picsum.photos/1200/800?random=${i}" style="width:100%; margin-top:20px; border-radius:20px;">
+      `;
+
+      container.appendChild(card);
+    }
+
+
+    // =========================
+    // POPUP TARDIO CAUSANDO SHIFT
+    // =========================
+
+    setTimeout(() => {
+      const popup = document.createElement('div');
+      popup.className = 'floating-popup';
+
+      popup.innerHTML = `
+        <h3>Newsletter</h3>
+        <p>Inscreva-se agora!</p>
+        <button onclick="this.parentElement.remove()">Fechar</button>
+      `;
+
+      document.body.appendChild(popup);
+    }, 5000);
+
+
+    // =========================
+    // JAVASCRIPT DESNECESSÁRIO
+    // =========================
+
+    const uselessArray = [];
+
+    for (let i = 0; i < 500000; i++) {
+      uselessArray.push({
+        number: i,
+        random: Math.random(),
+        text: 'performance ruim'
+      });
+    }
+
+    console.log('Array inútil criado:', uselessArray.length);
+
+  </script>
+
+</body>
+</html>
