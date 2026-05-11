@@ -1,23 +1,37 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
+<!-- ❌ SEO: sem DOCTYPE -->
+<!-- ❌ SEO: sem lang no <html> -->
+<html>
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Site com Core Web Vitals Ruim</title>
+  <!-- ❌ SEO: charset declarado tarde -->
+  <!-- ❌ SEO: sem meta description -->
+  <!-- ❌ SEO: sem meta og: / twitter card -->
+  <!-- ❌ SEO: title genérico e sem palavras-chave -->
+  <title>página</title>
 
-  <!-- ❌ LCP: CSS externo bloqueando render (mantido 2, removido Bootstrap/Materialize) -->
+  <!-- ❌ SEO: robots bloqueando indexação -->
+  <meta name="robots" content="noindex, nofollow, noarchive, nosnippet">
+
+  <!-- ❌ PRÁTICAS: viewport errado — desabilita zoom (acessibilidade + ranking) -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+  <!-- ❌ PRÁTICAS: libs com vulnerabilidades conhecidas (versões antigas) -->
+  <!-- jQuery 1.8.3 — múltiplos CVEs de XSS -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+  <!-- Bootstrap 3.3.7 — versão EOL com vulns -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css">
+  <!-- Moment.js 2.18 — vulnerabilidade de ReDoS -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.0/moment.min.js"></script>
+
+  <!-- ❌ LCP: CSS externo bloqueando render -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
-  <!-- ❌ CLS: 4 famílias de fontes diferentes carregadas, todas com display=block -->
-  <!-- Cada uma tem métricas diferentes → cada troca causa layout shift -->
+  <!-- ❌ CLS: 4 fontes com display=block, métricas muito diferentes -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@100;300;400;500;700;900&display=block">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&display=block">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bebas+Neue&display=block">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lobster&display=block">
-
-  <!-- ✅ Scripts removidos do <head> (jQuery, Lodash, Moment eliminados) -->
 
   <style>
     * { box-sizing: border-box; }
@@ -31,7 +45,6 @@
 
     header {
       height: 100vh;
-      /* ❌ LCP: imagem de fundo via CSS sem preload (mantido) */
       background-image: url('https://picsum.photos/3000/2000');
       background-size: cover;
       background-position: center;
@@ -42,17 +55,9 @@
       text-align: center;
     }
 
-    h1 {
-      font-size: 72px;
-      text-shadow: 0 4px 10px rgba(0,0,0,0.4);
-    }
+    h1 { font-size: 72px; text-shadow: 0 4px 10px rgba(0,0,0,0.4); }
 
-    .container {
-      width: 95%;
-      max-width: 1400px;
-      margin: auto;
-      padding: 40px 0;
-    }
+    .container { width: 95%; max-width: 1400px; margin: auto; padding: 40px 0; }
 
     .card {
       background: white;
@@ -60,13 +65,10 @@
       padding: 30px;
       border-radius: 20px;
       box-shadow: 0 10px 30px rgba(0,0,0,0.15);
-      /* ❌ INP: transition: all (mantido) */
       transition: all 0.3s ease;
     }
-
     .card:hover { transform: scale(1.03); }
 
-    /* ❌ CLS: banner sem espaço reservado (mantido) */
     .late-banner {
       display: none;
       margin: 50px 0;
@@ -90,7 +92,6 @@
       z-index: 999;
     }
 
-    /* ❌ CLS: ad slot sem altura (mantido) */
     .ad-slot {
       background: #eee;
       width: 100%;
@@ -104,9 +105,7 @@
     .cookie-bar {
       display: none;
       position: fixed;
-      bottom: 0;
-      left: 0;
-      right: 0;
+      bottom: 0; left: 0; right: 0;
       background: #222;
       color: #fff;
       padding: 20px 40px;
@@ -125,15 +124,8 @@
       margin-top: 10px;
     }
 
-    /* ❌ CLS: imagens dos cards sem aspect-ratio reservado */
-    .card img {
-      width: 100%;
-      margin-top: 20px;
-      border-radius: 20px;
-      display: block;
-    }
+    .card img { width: 100%; margin-top: 20px; border-radius: 20px; display: block; }
 
-    /* ❌ CLS: elementos inseridos no topo empurram tudo para baixo */
     .injected-bar {
       background: #1a73e8;
       color: white;
@@ -143,59 +135,147 @@
       font-weight: bold;
     }
 
-    /* ❌ CLS: parágrafo que cresce de tamanho depois */
-    .growing-text {
-      font-size: 14px;
-      line-height: 1.4;
-      transition: none;
-    }
+    .growing-text { font-size: 14px; line-height: 1.4; }
+
+    /* ❌ ACESSIBILIDADE: contraste baixíssimo — 1.4:1 (mínimo é 4.5:1) */
+    .low-contrast { color: #ccc; background: #fff; font-size: 11px; }
+
+    /* ❌ ACESSIBILIDADE: texto ilegível */
+    .tiny-text { font-size: 8px; }
+
+    /* ❌ SEO: links indistinguíveis do texto corrido */
+    a { color: inherit; text-decoration: none; }
+
+    /* ❌ ACESSIBILIDADE: foco removido — impossível navegar por teclado */
+    *:focus { outline: none !important; }
+
+    /* ❌ ACESSIBILIDADE: cursor padrão em elementos clicáveis */
+    .fake-btn { cursor: default; display: block; }
   </style>
 </head>
+
+<!-- ❌ ACESSIBILIDADE: sem skip link para conteúdo principal -->
 <body>
 
+  <!-- ❌ ACESSIBILIDADE: sem landmark regions (nav, main, aside, footer) -->
   <header>
     <div>
+      <!-- ❌ SEO: h1 vago, sem palavra-chave -->
       <h1 class="animate__animated animate__fadeInDown">⚠️ Performance Ruim</h1>
+
+      <!-- ❌ SEO + ACESSIBILIDADE: imagem informativa sem alt -->
+      <img src="https://picsum.photos/1200/400" style="width:100%;margin-top:20px;border-radius:16px;">
+
       <p style="font-size:24px;">Este site foi criado para falhar nos Core Web Vitals.</p>
     </div>
   </header>
 
-  <!-- ❌ CLS: parágrafo intro que muda de tamanho e fonte depois -->
-  <div style="max-width:1400px;width:95%;margin:30px auto;" id="introText">
+  <!-- ❌ SEO: múltiplos h1 — destrói hierarquia e relevância -->
+  <h1 style="text-align:center;margin:20px 0;">Segundo H1 Desnecessário</h1>
+  <h1 style="text-align:center;margin:20px 0;">Terceiro H1 — Hierarquia Destruída</h1>
+
+  <!-- ❌ SEO: heading fora de ordem (h5 sem h2/h3/h4 anteriores) -->
+  <h5 style="text-align:center;color:#999;">Subtítulo em h5 sem hierarquia</h5>
+
+  <!-- ❌ ACESSIBILIDADE: contraste insuficiente -->
+  <p class="low-contrast" style="text-align:center;padding:10px;">
+    Texto com contraste de 1.4:1 — quase invisível para qualquer usuário
+  </p>
+
+  <!-- ❌ ACESSIBILIDADE + SEO: texto minúsculo ilegível com conteúdo importante -->
+  <p class="tiny-text" style="text-align:center;padding:0 20px;">
+    Termos e condições: ao usar este site você concorda com coleta de dados, venda de informações a terceiros,
+    assinatura automática de planos pagos e renúncia ao direito de reclamação. Preços podem mudar sem aviso.
+    Frete não incluso. Produto pode não existir. Empresa não se responsabiliza por nada.
+  </p>
+
+  <!-- ❌ SEO: links sem texto descritivo ("clique aqui", "saiba mais") -->
+  <p style="text-align:center;padding:10px;">
+    <a href="#">Clique aqui</a> &nbsp;|&nbsp;
+    <a href="#">Saiba mais</a> &nbsp;|&nbsp;
+    <a href="#">Acesse</a> &nbsp;|&nbsp;
+    <a href="#">Ver mais</a> &nbsp;|&nbsp;
+    <!-- ❌ PRÁTICAS: link externo sem rel="noopener" -->
+    <a href="https://example.com" target="_blank">Continuar</a>
+  </p>
+
+  <!-- ❌ ACESSIBILIDADE: formulário sem labels, só placeholders -->
+  <div style="max-width:600px;margin:20px auto;padding:0 20px;">
+    <!-- ❌ sem <label> associado -->
+    <input type="text" placeholder="Nome" style="width:100%;padding:10px;margin-bottom:10px;display:block;border:1px solid #ccc;border-radius:4px;">
+    <input type="email" placeholder="E-mail" style="width:100%;padding:10px;margin-bottom:10px;display:block;border:1px solid #ccc;border-radius:4px;">
+    <!-- ❌ ACESSIBILIDADE: botão vago sem aria-label -->
+    <button style="width:100%;">OK</button>
+  </div>
+
+  <!-- ❌ SEO: tabela usada para layout, não para dados tabulares -->
+  <table width="95%" style="margin:20px auto;border-collapse:collapse;">
+    <tr>
+      <td width="33%" style="padding:20px;background:#fff;border:1px solid #eee;">
+        <!-- ❌ SEO: sem alt -->
+        <img src="https://picsum.photos/300/200?random=100" style="width:100%;">
+        <b>Produto A</b>
+      </td>
+      <td width="33%" style="padding:20px;background:#fff;border:1px solid #eee;">
+        <!-- ❌ SEO: alt vazio em imagem informativa -->
+        <img src="https://picsum.photos/300/200?random=101" style="width:100%;" alt="">
+        <b>Produto B</b>
+      </td>
+      <td width="33%" style="padding:20px;background:#fff;border:1px solid #eee;">
+        <!-- ❌ SEO: alt repetindo a mesma palavra 8 vezes (keyword stuffing) -->
+        <img src="https://picsum.photos/300/200?random=102" style="width:100%;" alt="imagem imagem imagem imagem imagem imagem imagem imagem">
+        <b>Produto C</b>
+      </td>
+    </tr>
+  </table>
+
+  <div style="max-width:1400px;width:95%;margin:30px auto;">
     <p class="growing-text" id="growingPara">
-      Bem-vindo ao nosso site. Aqui você encontra os melhores produtos com os melhores preços.
-      Navegue à vontade e aproveite nossas promoções exclusivas para clientes cadastrados.
+      Bem-vindo ao nosso site. Aqui você encontra os melhores produtos.
     </p>
   </div>
 
-  <!-- ❌ CLS: ad sem altura reservada -->
   <div class="ad-slot" id="adSlot">[ Carregando anúncio... ]</div>
 
   <div class="container" id="content"></div>
 
-  <!-- ❌ CLS: banner oculto sem espaço reservado -->
   <div class="late-banner" id="lateBanner">🔥 PROMOÇÃO IMPERDÍVEL — SÓ HOJE! 🔥</div>
 
-  <!-- ❌ CLS: cookie bar tardia -->
   <div class="cookie-bar" id="cookieBar">
     🍪 Usamos cookies.
-    <button onclick="document.getElementById('cookieBar').style.display='none'">Aceitar</button>
+    <button onclick="document.getElementById('cookieBar').style.display='none'">OK</button>
   </div>
 
   <script>
-    // ======================================================
-    // ❌ CLS — FONT SHIFT em cascata: troca fontes 4 vezes
-    // Cada fonte tem métricas diferentes → shift em toda troca
-    // ======================================================
+    // ❌ PRÁTICAS: eval() — viola CSP, bloqueia otimizações do JS engine
+    eval("console.log('eval executado')");
 
-    // 0.5s: troca para Playfair Display (serifada, muito mais alta)
+    // ❌ PRÁTICAS: document.write — bloqueia o parser HTML
+    document.write('<span style="display:none">via document.write</span>');
+
+    // ❌ PRÁTICAS: API depreciada
+    try { document.execCommand('bold'); } catch(e) {}
+
+    // ❌ PRÁTICAS: erro não tratado no console (prejudica nota de práticas)
+    setTimeout(() => { throw new Error('Erro não tratado proposital'); }, 800);
+
+    // ❌ PRÁTICAS: Promise rejeitada sem .catch()
+    Promise.reject(new Error('unhandledRejection proposital'));
+
+    // ❌ PRÁTICAS: 200 event listeners órfãos — memory leak garantido
+    for (let i = 0; i < 200; i++) {
+      document.addEventListener('mousemove', () => {});
+    }
+
+    // ======================================================
+    // ❌ CLS — Font shift em cascata (4 trocas)
+    // ======================================================
     setTimeout(() => {
       document.body.style.fontFamily = "'Playfair Display', Georgia, serif";
       document.body.style.lineHeight = '1.9';
       document.body.style.letterSpacing = '0.5px';
     }, 500);
 
-    // 1.2s: troca para Bebas Neue (condensada, toda maiúscula)
     setTimeout(() => {
       document.body.style.fontFamily = "'Bebas Neue', Impact, sans-serif";
       document.body.style.lineHeight = '1.1';
@@ -203,7 +283,6 @@
       document.body.style.fontSize = '18px';
     }, 1200);
 
-    // 2s: troca para Lobster (script/cursiva, muito diferente)
     setTimeout(() => {
       document.body.style.fontFamily = "'Lobster', cursive";
       document.body.style.lineHeight = '2.2';
@@ -211,7 +290,6 @@
       document.body.style.fontSize = '16px';
     }, 2000);
 
-    // 3s: volta pra Roboto mas com line-height diferente
     setTimeout(() => {
       document.body.style.fontFamily = "'Roboto', sans-serif";
       document.body.style.lineHeight = '2.5';
@@ -220,7 +298,7 @@
     }, 3000);
 
     // ======================================================
-    // ❌ CLS — Parágrafo cresce de tamanho após 1.5s
+    // ❌ CLS — Parágrafo cresce (1.5s)
     // ======================================================
     setTimeout(() => {
       const p = document.getElementById('growingPara');
@@ -231,30 +309,26 @@
     }, 1500);
 
     // ======================================================
-    // ❌ CLS — Barra injetada no TOPO do body (empurra TUDO para baixo)
+    // ❌ CLS — Barras injetadas no topo
     // ======================================================
     setTimeout(() => {
       const bar = document.createElement('div');
       bar.className = 'injected-bar';
-      bar.textContent = '🚨 ATENÇÃO: Esta barra foi injetada no topo e deslocou toda a página!';
+      bar.textContent = '🚨 Esta barra foi injetada no topo e deslocou toda a página!';
       document.body.prepend(bar);
     }, 2500);
 
-    // ======================================================
-    // ❌ CLS — Segunda barra injetada no topo (mais shift)
-    // ======================================================
     setTimeout(() => {
       const bar2 = document.createElement('div');
       bar2.className = 'injected-bar';
       bar2.style.background = '#e53935';
       bar2.style.padding = '30px';
-      bar2.style.fontSize = '20px';
       bar2.textContent = '🔴 MAIS UMA BARRA NO TOPO — CLS ACUMULANDO!';
       document.body.prepend(bar2);
     }, 4500);
 
     // ======================================================
-    // ❌ CLS — h1 muda de tamanho e fonte depois
+    // ❌ CLS — h1 muda fonte e tamanho (3.5s)
     // ======================================================
     setTimeout(() => {
       const h1 = document.querySelector('h1');
@@ -266,36 +340,25 @@
     }, 3500);
 
     // ======================================================
-    // ❌ INP RUIM — Long task no clique (600ms)
+    // ❌ INP — Long task no clique (600ms)
     // ======================================================
     document.body.addEventListener('click', () => {
       const t = performance.now();
-      while (performance.now() - t < 600) {
-        Math.random() * Math.random();
-      }
+      while (performance.now() - t < 600) { Math.random() * Math.random(); }
     });
 
     // ======================================================
-    // ❌ INP: scroll sem passive
+    // ❌ INP — Scroll sem passive + layout thrashing
     // ======================================================
     window.addEventListener('scroll', () => {
-      const cards = document.querySelectorAll('.card');
-      cards.forEach(c => {
+      document.querySelectorAll('.card').forEach(c => {
         const h = c.offsetHeight;
         c.style.marginTop = '0px';
       });
     });
 
-    // ======================================================
-    // ❌ CLS — Banner sem reserva de espaço (4s)
-    // ======================================================
-    setTimeout(() => {
-      document.getElementById('lateBanner').style.display = 'block';
-    }, 4000);
+    setTimeout(() => { document.getElementById('lateBanner').style.display = 'block'; }, 4000);
 
-    // ======================================================
-    // ❌ CLS — Popup tardio (5s)
-    // ======================================================
     setTimeout(() => {
       const popup = document.createElement('div');
       popup.className = 'floating-popup';
@@ -308,16 +371,8 @@
       document.body.appendChild(popup);
     }, 5000);
 
-    // ======================================================
-    // ❌ CLS — Cookie bar tardia (6s)
-    // ======================================================
-    setTimeout(() => {
-      document.getElementById('cookieBar').style.display = 'block';
-    }, 6000);
+    setTimeout(() => { document.getElementById('cookieBar').style.display = 'block'; }, 6000);
 
-    // ======================================================
-    // ❌ CLS — Ad slot muda de tamanho após 3s
-    // ======================================================
     setTimeout(() => {
       const ad = document.getElementById('adSlot');
       ad.style.height = '200px';
@@ -328,32 +383,59 @@
     }, 3000);
 
     // ======================================================
-    // ❌ DOM GRANDE — 50 cards, imagens sem width/height
+    // ❌ SEO: 50 cards com h2 idênticos e alt texts horríveis
     // ======================================================
     const container = document.getElementById('content');
     const fragment = document.createDocumentFragment();
+
+    const altRuins = [
+      null,                                         // sem atributo alt
+      '',                                           // alt vazio em img informativa
+      'imagem',                                     // genérico
+      'foto foto foto foto foto',                   // repetição
+      'IMG_20230814_093021.jpg',                    // nome de arquivo
+      'image001',                                   // código interno
+      'clique aqui para ver',                       // instrução de clique
+      'undefined',                                  // bug de template
+      '.',                                          // sem sentido
+      'produto produto produto produto produto',     // keyword stuffing
+    ];
 
     for (let i = 0; i < 50; i++) {
       const card = document.createElement('div');
       card.className = 'card';
 
+      const altVal = altRuins[i % altRuins.length];
+      const altAttr = altVal === null ? '' : `alt="${altVal}"`;
+
       card.innerHTML = `
-        <h2>Card ${i + 1} <i class="fa fa-star"></i></h2>
-        <p>
-          Lorem ipsum dolor sit amet consectetur adipisicing elit.
-          Voluptatibus, molestiae.
-        </p>
-        <!-- ❌ CLS: sem width/height → shift ao carregar -->
+        <!-- ❌ SEO: todos os h2 idênticos — zero valor semântico -->
+        <h2>Card <i class="fa fa-star"></i></h2>
+
+        <!-- ❌ SEO: link com texto só de ícone, sem aria-label -->
+        <a href="#"><i class="fa fa-arrow-right"></i></a>
+
+        <!-- ❌ SEO: parágrafo de lorem ipsum — conteúdo sem valor -->
+        <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Voluptatibus molestiae.</p>
+
+        <!-- ❌ SEO: alt text horrível (${altVal === null ? 'sem alt' : `"${altVal}"`}) -->
         <img
           src="https://picsum.photos/800/500?random=${i}"
           loading="lazy"
-          alt="imagem card ${i + 1}"
+          ${altAttr}
+          style="width:100%;margin-top:20px;border-radius:20px;"
         >
-        <button onclick="
-          const s = performance.now();
-          while(performance.now()-s < 300){ Math.random(); }
-          this.textContent = 'Clicado';
-        ">Botão</button>
+
+        <!-- ❌ ACESSIBILIDADE: div clicável em vez de <button> — invisível para screen readers -->
+        <div
+          class="fake-btn"
+          style="background:black;color:white;padding:15px;border-radius:10px;margin-top:10px;text-align:center;"
+          onclick="
+            const s = performance.now();
+            while(performance.now()-s < 300){ Math.random(); }
+            this.textContent = 'Clicado';
+          "
+        >Ação</div>
       `;
 
       fragment.appendChild(card);
@@ -361,21 +443,16 @@
 
     container.appendChild(fragment);
 
-    // ======================================================
-    // ❌ Array desnecessário
-    // ======================================================
-    const lixo = [];
-    for (let i = 0; i < 100_000; i++) {
-      lixo.push({ id: i, valor: Math.random() });
-    }
+    // ❌ PRÁTICAS: forced reflow periódico
+    setInterval(() => { void document.body.offsetHeight; }, 2000);
 
-    // ======================================================
-    // ❌ setInterval com forced reflow
-    // ======================================================
-    setInterval(() => {
-      void document.body.offsetHeight;
-    }, 2000);
-
+    // ❌ PRÁTICAS: variável global poluindo window
+    window.lixoGlobal = Array.from({ length: 100000 }, (_, i) => ({ id: i, v: Math.random() }));
   </script>
+
+  <!-- ❌ SEO: sem dados estruturados (schema.org) -->
+  <!-- ❌ SEO: sem canonical -->
+  <!-- ❌ SEO: sem sitemap hint -->
+  <!-- ❌ SEO: sem footer com links internos -->
 </body>
 </html>
